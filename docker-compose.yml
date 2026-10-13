@@ -1,0 +1,31 @@
+# docker-compose lets us describe the setup for our applicaton in a single file
+# it can start the backend and frontend containers in a single command rather than us having to start each individually and needing to remember the flags
+
+# Docker Desktop runs a small, Linux virtual machine in the background,
+#   and all of the things described in the dockerfiles: — image storage, running containers, the /app directories inside them
+#   physically lives inside that VM's own disk,
+#   This is called the Docker Daemon
+
+# A Docker image is kind of like a stack of layers 
+#   each meaningful instruction in your Dockerfile (COPY, RUN, etc.) produces one layer
+#   which is just a snapshot of what changed in the filesystem at that step. 
+#   These layers stack on top of each other to form the complete image, and they're stored inside Docker's own managed storage area
+
+services: # The two children, backend and frontend, are the two container services that we want to run together. Each service is a container that will be built from the Dockerfile in the specified context directory.
+  backend: # The name of the backend service, which will be used to refer to it in the frontend's depends_on section.
+    build: # Build an image from this service and use ./server as the build context, which is the directory where the docker file is located
+      context: ./server 
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./server/.env
+  frontend:
+    build: # This builds an image from the repo root
+      context: .
+      args:
+       - VITE_API_URL=http://localhost:3000
+    ports:
+      - "5173:80"
+    depends_on: # Star the backend container service before the frontend container service
+      - backend
+

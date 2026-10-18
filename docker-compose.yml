@@ -18,7 +18,7 @@ services: # The two children, backend and frontend, are the two container servic
     ports:
       - "3000:3000"
     env_file:
-      - ./server/.env
+      - ./server/.env # When docker compose starts the backend container, it will read the environment variables from this file and set them inside the container. This is important for things like API keys and other configuration that should not be hardcoded into the image
   frontend:
     build: # This builds an image from the repo root
       context: .
